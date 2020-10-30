@@ -1,12 +1,31 @@
 const express = require('express');
-const path = require('path');
+// Express used to create server
 const app = express();
 
-const pathDirectory = path.join(__dirname + "/src");
+const session = require('express-session');
+var auth = require('./auth.js');
 
-// console.log(pathDirectory);
-app.use(express.static(pathDirectory));
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'SECRET'
+  }
+));
 
-app.listen(3000, () => {
-  console.log('Server is running.')
-})
+// Update client_secret with the credentials download from developers.google
+
+app.get('/', function(req, res) {
+  res.send('Route to "/sendMail" to send mail');
+});
+
+app.get('/sendMail', function(req, res) {
+  auth.sendMail();
+});
+
+app.get('/createDraft', function(req, res) {
+  auth.saveDraft();
+});
+
+app.listen(process.env.PORT || 4000 , () => {
+  console.log('Listening ... ')
+});
